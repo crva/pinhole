@@ -1,0 +1,201 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1310" width="1200" height="1310" role="img" aria-labelledby="title desc">
+  <title id="title">How Pinhole works</title>
+  <desc id="desc">Sequence diagram: the host generates a share code locally, both PCs meet through a relay (n0's public ones by default, or your own), punch a direct path, authenticate with the token over that direct path (which also takes a joiner place), then forward TCP streams and UDP datagrams directly. The relay path stays on standby with encrypted keepalives only.</desc>
+  <style>
+    svg {
+      --bg: #ffffff; --fg: #0f172a; --muted: #5b6472; --line: #cbd5e1; --band: #f6f7f9;
+      --card: #ffffff; --border: #e2e8f0; --direct: #16a34a; --direct-bg: #eaf7ef;
+      --relay: #808a99; --oob: #7c3aed; --oob-bg: #f4effe; --warn: #dc2626;
+      font-family: -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      svg {
+        --bg: #0d1117; --fg: #e6edf3; --muted: #9aa4b1; --line: #30363d; --band: #161b22;
+        --card: #0d1117; --border: #30363d; --direct: #3fb950; --direct-bg: #11261a;
+        --relay: #8b949e; --oob: #a78bfa; --oob-bg: #211a37; --warn: #f85149;
+      }
+    }
+    .bg { fill: var(--bg); }
+    .band { fill: var(--band); }
+    .card { fill: var(--card); stroke: var(--border); stroke-width: 1; }
+    .lane { fill: var(--card); stroke: var(--line); stroke-width: 1.5; }
+    .life { stroke: var(--line); stroke-width: 2; stroke-dasharray: 2 6; stroke-linecap: round; }
+    .life-faint { stroke: var(--line); stroke-width: 2; stroke-dasharray: 2 10; stroke-linecap: round; opacity: .45; }
+    .h1 { fill: var(--fg); font-size: 28px; font-weight: 700; }
+    .sub { fill: var(--muted); font-size: 15px; }
+    .lane-t { fill: var(--fg); font-size: 15px; font-weight: 700; letter-spacing: .08em; }
+    .lane-s { fill: var(--muted); font-size: 13px; }
+    .step-t { fill: var(--fg); font-size: 16px; font-weight: 700; }
+    .step-s { fill: var(--muted); font-size: 13px; font-weight: 400; }
+    .badge { fill: var(--fg); }
+    .badge-n { fill: var(--bg); font-size: 13px; font-weight: 700; }
+    .t { fill: var(--fg); font-size: 13.5px; }
+    .b { fill: var(--fg); font-size: 14px; font-weight: 600; }
+    .m { fill: var(--muted); font-size: 12.5px; }
+    .mono { font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace; }
+    .halo { paint-order: stroke; stroke: var(--band); stroke-width: 7px; stroke-linejoin: round; }
+    .a-direct { stroke: var(--direct); stroke-width: 3; fill: none; }
+    .a-relay { stroke: var(--relay); stroke-width: 2; stroke-dasharray: 7 5; fill: none; }
+    .a-oob { stroke: var(--oob); stroke-width: 2; stroke-dasharray: 7 5; fill: none; }
+    .f-direct { fill: var(--direct); }
+    .f-relay { fill: var(--relay); }
+    .f-oob { fill: var(--oob); }
+    .hop { fill: var(--band); stroke: var(--relay); stroke-width: 2; }
+    .oob-box { fill: var(--oob-bg); stroke: var(--oob); stroke-width: 1.5; }
+    .direct-box { fill: var(--direct-bg); stroke: var(--direct); stroke-width: 1.5; }
+    .c-direct { fill: var(--direct); }
+    .c-oob { fill: var(--oob); }
+    .c-relay { fill: var(--relay); }
+    .c-warn { fill: var(--warn); }
+    .ico-direct { fill: none; stroke: var(--direct); stroke-width: 1.8; stroke-linejoin: round; stroke-linecap: round; }
+  </style>
+  <defs>
+    <marker id="m-direct" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto-start-reverse"><path class="f-direct" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="m-relay" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path class="f-relay" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="m-oob" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="5.5" markerHeight="5.5" orient="auto-start-reverse"><path class="f-oob" d="M0,0 L10,5 L0,10 z"/></marker>
+  </defs>
+
+  <rect class="bg" width="1200" height="1310"/>
+
+  <!-- Header -->
+  <text class="h1" x="40" y="56">How Pinhole works</text>
+  <text class="sub" x="40" y="84">The relay only introduces the two PCs. Your data flows directly, end-to-end encrypted.</text>
+  <g transform="translate(905 34)">
+    <line class="a-direct" x1="0" y1="0" x2="44" y2="0"/>
+    <text class="m" x="56" y="4.5">direct path (P2P)</text>
+    <line class="a-relay" x1="0" y1="22" x2="44" y2="22"/>
+    <text class="m" x="56" y="26.5">through the relay (encrypted)</text>
+    <line class="a-oob" x1="0" y1="44" x2="44" y2="44"/>
+    <text class="m" x="56" y="48.5">sent by you (chat, SMS…)</text>
+  </g>
+
+  <!-- Phase bands -->
+  <rect class="band" x="40" y="190" width="1120" height="160" rx="14"/>
+  <rect class="band" x="40" y="362" width="1120" height="262" rx="14"/>
+  <rect class="band" x="40" y="636" width="1120" height="134" rx="14"/>
+  <rect class="band" x="40" y="782" width="1120" height="100" rx="14"/>
+  <rect class="band" x="40" y="894" width="1120" height="234" rx="14"/>
+
+  <!-- Lifelines -->
+  <line class="life" x1="200" y1="170" x2="200" y2="1128"/>
+  <line class="life" x1="1000" y1="170" x2="1000" y2="1128"/>
+  <line class="life" x1="600" y1="170" x2="600" y2="624"/>
+  <line class="life-faint" x1="600" y1="636" x2="600" y2="1128"/>
+
+  <!-- Lanes -->
+  <rect class="lane" x="60" y="110" width="280" height="60" rx="12"/>
+  <text class="lane-t" x="200" y="136" text-anchor="middle">HOST</text>
+  <text class="lane-s" x="200" y="157" text-anchor="middle">shares a local port</text>
+  <rect class="lane" x="470" y="110" width="260" height="60" rx="12"/>
+  <text class="lane-t" x="600" y="136" text-anchor="middle">RELAY</text>
+  <text class="lane-s" x="600" y="157" text-anchor="middle">n0 by default · intro, then standby</text>
+  <rect class="lane" x="860" y="110" width="280" height="60" rx="12"/>
+  <text class="lane-t" x="1000" y="136" text-anchor="middle">JOINER</text>
+  <text class="lane-s" x="1000" y="157" text-anchor="middle">joins with the share code</text>
+
+  <!-- 1. Share code -->
+  <circle class="badge" cx="72" cy="213" r="13"/>
+  <text class="badge-n" x="72" y="217.5" text-anchor="middle">1</text>
+  <text class="step-t halo" x="94" y="218">Share code<tspan class="step-s" dx="10">· created on the host, nothing goes over the network</tspan></text>
+
+  <rect class="card" x="60" y="236" width="280" height="56" rx="10"/>
+  <text class="b" x="76" y="259">New key pair + random token</text>
+  <text class="m" x="76" y="280">the private key never leaves the PC</text>
+
+  <rect class="oob-box" x="400" y="236" width="400" height="56" rx="10"/>
+  <text class="t mono" x="600" y="259" text-anchor="middle">ph1_&lt;base64url&gt;</text>
+  <text class="m" x="600" y="280" text-anchor="middle">host public key · relay URL · tcp/udp · port · 16-byte token</text>
+
+  <line class="a-oob" x1="200" y1="312" x2="996" y2="312" marker-end="url(#m-oob)"/>
+  <text class="m halo" x="600" y="338" text-anchor="middle">you send it to the joiner · no IP address inside · the relay never sees it</text>
+
+  <!-- 2. Rendezvous -->
+  <circle class="badge" cx="72" cy="385" r="13"/>
+  <text class="badge-n" x="72" y="389.5" text-anchor="middle">2</text>
+  <text class="step-t halo" x="94" y="390">Rendezvous<tspan class="step-s" dx="10">· the relay (n0’s or your own) forwards packets it cannot decrypt</tspan></text>
+
+  <line class="a-relay" x1="200" y1="430" x2="596" y2="430" marker-end="url(#m-relay)"/>
+  <text class="t halo" x="400" y="420" text-anchor="middle">registers as key X</text>
+
+  <line class="a-relay" x1="1000" y1="478" x2="604" y2="478" marker-end="url(#m-relay)"/>
+  <text class="t halo" x="800" y="468" text-anchor="middle">“connect me to key X”</text>
+
+  <line class="a-relay" x1="204" y1="536" x2="996" y2="536" marker-start="url(#m-relay)" marker-end="url(#m-relay)"/>
+  <circle class="hop" cx="600" cy="536" r="6"/>
+  <text class="t halo" x="600" y="524" text-anchor="middle">QUIC + TLS 1.3 handshake: the host proves it owns key X</text>
+  <text class="m halo" x="600" y="556" text-anchor="middle">the key is pinned by the code, so the relay cannot impersonate the host</text>
+
+  <line class="a-relay" x1="204" y1="596" x2="996" y2="596" marker-start="url(#m-relay)" marker-end="url(#m-relay)"/>
+  <circle class="hop" cx="600" cy="596" r="6"/>
+  <text class="t halo" x="600" y="584" text-anchor="middle">IP addresses + hole punching coordination, inside the encrypted connection</text>
+
+  <!-- 3. Direct path -->
+  <circle class="badge" cx="72" cy="659" r="13"/>
+  <text class="badge-n" x="72" y="663.5" text-anchor="middle">3</text>
+  <text class="step-t halo" x="94" y="664">Direct path<tspan class="step-s" dx="10">· hole punching through both routers</tspan></text>
+
+  <line class="a-direct" x1="206" y1="708" x2="994" y2="708" marker-start="url(#m-direct)" marker-end="url(#m-direct)"/>
+  <text class="b halo" x="600" y="696" text-anchor="middle">direct QUIC connection over UDP</text>
+  <text class="m halo" x="600" y="734" text-anchor="middle">Nothing else is sent until this direct path is selected.</text>
+  <text class="m halo" x="600" y="753" text-anchor="middle">No direct path within 20 s → the attempt fails, there is no relay fallback. After a drop, the joiner retries steps 2–4 for up to 5 min.</text>
+
+  <!-- 4. Authentication -->
+  <circle class="badge" cx="72" cy="805" r="13"/>
+  <text class="badge-n" x="72" y="809.5" text-anchor="middle">4</text>
+  <text class="step-t halo" x="94" y="810">Authentication<tspan class="step-s" dx="10">· and the joiner limit</tspan></text>
+
+  <line class="a-direct" x1="1000" y1="840" x2="206" y2="840" marker-end="url(#m-direct)"/>
+  <text class="t halo" x="600" y="828" text-anchor="middle">16-byte token from the code, over the direct path only</text>
+  <text class="m halo" x="600" y="864" text-anchor="middle">checked in constant time → the host takes a joiner place, or answers “share full” · wrong token → closed</text>
+
+  <!-- 5. Forwarding -->
+  <circle class="badge" cx="72" cy="917" r="13"/>
+  <text class="badge-n" x="72" y="921.5" text-anchor="middle">5</text>
+  <text class="step-t halo" x="94" y="922">Forwarding<tspan class="step-s" dx="10">· same port by default, localhost only</tspan></text>
+
+  <rect class="direct-box" x="60" y="940" width="280" height="116" rx="12"/>
+  <text class="b" x="78" y="966">Your server</text>
+  <text class="t mono" x="78" y="990">127.0.0.1:8080</text>
+  <text class="m" x="78" y="1014">a game server, a website, a database…</text>
+  <text class="m" x="78" y="1036">the host only forwards to localhost</text>
+
+  <rect class="direct-box" x="860" y="940" width="280" height="116" rx="12"/>
+  <text class="b" x="878" y="966">The joiner's app</text>
+  <text class="t mono" x="878" y="990">localhost:8080</text>
+  <text class="m" x="878" y="1014">connects as if the server were local</text>
+  <text class="m" x="878" y="1036">the joiner listens on 127.0.0.1 only</text>
+
+  <line class="a-direct" x1="346" y1="980" x2="854" y2="980" marker-start="url(#m-direct)" marker-end="url(#m-direct)"/>
+  <text class="t halo" x="600" y="968" text-anchor="middle">TCP: each connection → one QUIC stream</text>
+
+  <line class="a-direct" x1="346" y1="1032" x2="854" y2="1032" marker-start="url(#m-direct)" marker-end="url(#m-direct)"/>
+  <text class="t halo" x="600" y="1020" text-anchor="middle">UDP: each packet → one QUIC datagram</text>
+  <text class="m halo mono" x="600" y="1052" text-anchor="middle">[ flow id · 4 B | payload ≤ ~1200 B ]</text>
+
+  <path class="ico-direct" transform="translate(296 1084)" d="M8 1 L15 4 V9 C15 13 12 16 8 17 C4 16 1 13 1 9 V4 Z M5 9 L7.3 11.3 L11.5 6.8"/>
+  <text class="t halo" x="322" y="1098">Watchdog: if iroh moves the connection to the relay, it is closed at once (packets already in flight stay encrypted).</text>
+
+  <!-- What crosses where -->
+  <rect class="card" x="40" y="1148" width="360" height="142" rx="12"/>
+  <circle class="c-relay" cx="64" cy="1172" r="5"/>
+  <text class="b" x="78" y="1177">The relay sees</text>
+  <text class="t" x="60" y="1206">• both public keys and IP addresses</text>
+  <text class="t" x="60" y="1230">• encrypted packet sizes and timing</text>
+  <text class="t" x="60" y="1254">• ~50 KB to connect, then tiny keepalives</text>
+  <text class="m" x="74" y="1274">(every 5 s, keep the relay path on standby)</text>
+
+  <rect class="card" x="420" y="1148" width="360" height="142" rx="12"/>
+  <circle class="c-warn" cx="444" cy="1172" r="5"/>
+  <text class="b" x="458" y="1177">The relay never sees</text>
+  <text class="t" x="440" y="1206">• the share code or its token</text>
+  <text class="t" x="440" y="1230">• your app's data in readable form</text>
+  <text class="t" x="440" y="1254">• anything it could decrypt</text>
+
+  <rect class="card" x="800" y="1148" width="360" height="142" rx="12"/>
+  <circle class="c-direct" cx="824" cy="1172" r="5"/>
+  <text class="b" x="838" y="1177">Built-in protections</text>
+  <text class="t" x="820" y="1206">• new keys and token on every share</text>
+  <text class="t" x="820" y="1230">• stopping the share kills the code</text>
+  <text class="t" x="820" y="1254">• 1 joiner at a time by default (max 16)</text>
+  <text class="m" x="834" y="1274">128 TCP connections, 64 UDP flows per joiner</text>
+</svg>

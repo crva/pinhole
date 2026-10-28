@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Pinhole: two peers linked straight through a small hole in a wall (the NAT).
+       The glyph is mirrored in src/components/Logo.tsx; keep both in sync. -->
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#3cc062"/>
+      <stop offset="1" stop-color="#15853d"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="224" fill="url(#bg)"/>
+  <g fill="#ffffff">
+    <rect x="476" y="180" width="72" height="228" rx="36" opacity=".5"/>
+    <rect x="476" y="616" width="72" height="228" rx="36" opacity=".5"/>
+    <rect x="250" y="476" width="524" height="72" rx="36"/>
+    <circle cx="250" cy="512" r="104"/>
+    <circle cx="774" cy="512" r="104"/>
+  </g>
+</svg>
